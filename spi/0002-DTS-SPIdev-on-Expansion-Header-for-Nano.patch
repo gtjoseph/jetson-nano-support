@@ -1,0 +1,253 @@
+From 09ed060bb30fbb18ff9874b2bc86f555de08e35f Mon Sep 17 00:00:00 2001
+From: George Joseph <gjoseph@digium.com>
+Date: Wed, 4 Sep 2019 05:46:58 -0600
+Subject: [PATCH] SPIdev on Expansion Header for Nano
+
+This patch enables both spi1 and spi2 on the expansion header
+and adds 2 spidev devices to each, one for each chip select.
+---
+ .../tegra210-porg-gpio-p3448-0000-a02.dtsi    | 10 ---
+ .../tegra210-porg-pinmux-p3448-0000-a02.dtsi  | 40 +++++-----
+ kernel-dts/tegra210-porg-p3448-common.dtsi    | 75 ++++++++++++++++++-
+ 3 files changed, 94 insertions(+), 31 deletions(-)
+
+diff --git a/kernel-dts/porg-platforms/tegra210-porg-gpio-p3448-0000-a02.dtsi b/kernel-dts/porg-platforms/tegra210-porg-gpio-p3448-0000-a02.dtsi
+index 6acdc55..52182e0 100755
+--- a/kernel-dts/porg-platforms/tegra210-porg-gpio-p3448-0000-a02.dtsi
++++ b/kernel-dts/porg-platforms/tegra210-porg-gpio-p3448-0000-a02.dtsi
+@@ -27,11 +27,6 @@
+ 		gpio_default: default {
+ 			gpio-input = <
+ 				TEGRA_GPIO(BB, 0)
+-				TEGRA_GPIO(B, 4)
+-				TEGRA_GPIO(B, 5)
+-				TEGRA_GPIO(B, 6)
+-				TEGRA_GPIO(B, 7)
+-				TEGRA_GPIO(DD, 0)
+ 				TEGRA_GPIO(E, 6)
+ 				TEGRA_GPIO(S, 5)
+ 				TEGRA_GPIO(A, 5)
+@@ -50,11 +45,6 @@
+ 				TEGRA_GPIO(J, 7)
+ 				TEGRA_GPIO(G, 2)
+ 				TEGRA_GPIO(G, 3)
+-				TEGRA_GPIO(C, 0)
+-				TEGRA_GPIO(C, 1)
+-				TEGRA_GPIO(C, 2)
+-				TEGRA_GPIO(C, 3)
+-				TEGRA_GPIO(C, 4)
+ 				TEGRA_GPIO(H, 2)
+ 				TEGRA_GPIO(H, 5)
+ 				TEGRA_GPIO(H, 6)
+diff --git a/kernel-dts/porg-platforms/tegra210-porg-pinmux-p3448-0000-a02.dtsi b/kernel-dts/porg-platforms/tegra210-porg-pinmux-p3448-0000-a02.dtsi
+index b226e1a..05d0778 100755
+--- a/kernel-dts/porg-platforms/tegra210-porg-pinmux-p3448-0000-a02.dtsi
++++ b/kernel-dts/porg-platforms/tegra210-porg-pinmux-p3448-0000-a02.dtsi
+@@ -601,15 +601,15 @@
+ 
+ 			spi2_mosi_pb4 {
+ 				nvidia,pins = "spi2_mosi_pb4";
+-				nvidia,function = "rsvd2";
++				nvidia,function = "spi2";
+ 				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+ 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+-				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
++				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+ 			};
+ 
+ 			spi2_miso_pb5 {
+ 				nvidia,pins = "spi2_miso_pb5";
+-				nvidia,function = "rsvd2";
++				nvidia,function = "spi2";
+ 				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+ 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+ 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+@@ -617,26 +617,26 @@
+ 
+ 			spi2_sck_pb6 {
+ 				nvidia,pins = "spi2_sck_pb6";
+-				nvidia,function = "rsvd2";
++				nvidia,function = "spi2";
+ 				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+ 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+-				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
++				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+ 			};
+ 
+ 			spi2_cs0_pb7 {
+ 				nvidia,pins = "spi2_cs0_pb7";
+-				nvidia,function = "rsvd2";
+-				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
++				nvidia,function = "spi2";
++				nvidia,pull = <TEGRA_PIN_PULL_UP>;
+ 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+-				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
++				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+ 			};
+ 
+ 			spi2_cs1_pdd0 {
+ 				nvidia,pins = "spi2_cs1_pdd0";
+-				nvidia,function = "rsvd1";
+-				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
++				nvidia,function = "spi2";
++				nvidia,pull = <TEGRA_PIN_PULL_UP>;
+ 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+-				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
++				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+ 			};
+ 
+ 			pe6 {
+@@ -825,15 +825,15 @@
+ 
+ 			spi1_mosi_pc0 {
+ 				nvidia,pins = "spi1_mosi_pc0";
+-				nvidia,function = "rsvd1";
++				nvidia,function = "spi1";
+ 				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+ 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+-				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
++				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+ 			};
+ 
+ 			spi1_miso_pc1 {
+ 				nvidia,pins = "spi1_miso_pc1";
+-				nvidia,function = "rsvd1";
++				nvidia,function = "spi1";
+ 				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+ 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+ 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+@@ -841,26 +841,26 @@
+ 
+ 			spi1_sck_pc2 {
+ 				nvidia,pins = "spi1_sck_pc2";
+-				nvidia,function = "rsvd1";
++				nvidia,function = "spi1";
+ 				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+ 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+-				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
++				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+ 			};
+ 
+ 			spi1_cs0_pc3 {
+ 				nvidia,pins = "spi1_cs0_pc3";
+-				nvidia,function = "rsvd1";
++				nvidia,function = "spi1";
+ 				nvidia,pull = <TEGRA_PIN_PULL_UP>;
+ 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+-				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
++				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+ 			};
+ 
+ 			spi1_cs1_pc4 {
+ 				nvidia,pins = "spi1_cs1_pc4";
+-				nvidia,function = "rsvd1";
++				nvidia,function = "spi1";
+ 				nvidia,pull = <TEGRA_PIN_PULL_UP>;
+ 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+-				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
++				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
+ 			};
+ 
+ 			wifi_en_ph0 {
+diff --git a/kernel-dts/tegra210-porg-p3448-common.dtsi b/kernel-dts/tegra210-porg-p3448-common.dtsi
+index 9ff3f7a..aa5c4df 100644
+--- a/kernel-dts/tegra210-porg-p3448-common.dtsi
++++ b/kernel-dts/tegra210-porg-p3448-common.dtsi
+@@ -203,10 +203,72 @@
+ 
+ 	spi@7000d400 { /* SPI 1 to 40 pin header */
+ 		status = "okay";
++		num-cs = <2>;
++		spi0_0 {
++			#address-cells = <0x1>;
++			#size-cells = <0x0>;
++			compatible = "spidev";
++			status = "okay";
++			reg = <0>;
++			spi-max-frequency = <54000000>;
++			controller-data {
++				nvidia,enable-hw-based-cs;
++				nvidia,cs-setup-clk-count = <0x1e>;
++				nvidia,cs-hold-clk-count = <0x1e>;
++				nvidia,rx-clk-tap-delay = <0x1f>;
++				nvidia,tx-clk-tap-delay = <0x0>;
++			};
++		};
++		spi0_1 {
++			#address-cells = <0x1>;
++			#size-cells = <0x0>;
++			compatible = "spidev";
++			status = "okay";
++			reg = <1>;
++			spi-max-frequency = <54000000>;
++			controller-data {
++				nvidia,enable-hw-based-cs;
++				nvidia,cs-setup-clk-count = <0x1e>;
++				nvidia,cs-hold-clk-count = <0x1e>;
++				nvidia,rx-clk-tap-delay = <0x1f>;
++				nvidia,tx-clk-tap-delay = <0x0>;
++			};
++		};
+ 	};
+ 
+ 	spi@7000d600 { /* SPI 2 to 40 pin header */
+ 		status = "okay";
++		num-cs = <2>;
++		spi0_0 {
++			#address-cells = <0x1>;
++			#size-cells = <0x0>;
++			compatible = "spidev";
++			status = "okay";
++			reg = <0>;
++			spi-max-frequency = <54000000>;
++			controller-data {
++				nvidia,enable-hw-based-cs;
++				nvidia,cs-setup-clk-count = <0x1e>;
++				nvidia,cs-hold-clk-count = <0x1e>;
++				nvidia,rx-clk-tap-delay = <0x1f>;
++				nvidia,tx-clk-tap-delay = <0x0>;
++			};
++		};
++		spi0_1 {
++			#address-cells = <0x1>;
++			#size-cells = <0x0>;
++			compatible = "spidev";
++			status = "okay";
++			reg = <1>;
++			spi-max-frequency = <54000000>;
++			controller-data {
++				nvidia,enable-hw-based-cs;
++				nvidia,cs-setup-clk-count = <0x1e>;
++				nvidia,cs-hold-clk-count = <0x1e>;
++				nvidia,rx-clk-tap-delay = <0x1f>;
++				nvidia,tx-clk-tap-delay = <0x0>;
++			};
++		};
+ 	};
+ 
+ 	spi@7000d800 {
+@@ -794,9 +856,20 @@
+ 			output-high;
+ 			gpio-suspend;
+ 			suspend-output-low;
++            function;
+ 			gpios = <
++				TEGRA_GPIO(C, 0) 0
++				TEGRA_GPIO(C, 1) 0
++				TEGRA_GPIO(C, 2) 0
++				TEGRA_GPIO(C, 3) 0
++				TEGRA_GPIO(C, 4) 0
++				TEGRA_GPIO(B, 4) 0
++				TEGRA_GPIO(B, 5) 0
++				TEGRA_GPIO(B, 6) 0
++				TEGRA_GPIO(B, 7) 0
++				TEGRA_GPIO(DD, 0) 0
+ 				TEGRA_GPIO(A, 6) 0
+-				>;
++			>;
+ 		};
+ 	};
+ 
+-- 
+2.21.0
+
