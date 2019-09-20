@@ -2,10 +2,11 @@
 
 ## SPI
 
-The spi directory contains a dtb and u-boot image for the DevKit
-with part number p3448-0000-p3449-0000-a02.  Together they enable
-both spi1 and spi2 on the 40-pin expansion connector and create
-/dev nodes for spidev0.0, spidev0.1, spidev1.0 and spidev1.1.
+The spi directory contains dtb and u-boot binaries for the DevKit
+with part number p3448-0000-p3449-0000-a02 as well as the patch files
+used to create them.  Together they enable both spi1 and spi2, or just spi1,
+on the 40-pin expansion connector and create /dev nodes for spidev0.0, spidev0.1
+and for spidev1.0 and spidev1.1 if spi2 is enabled.
 
 To use these files without modification you'll still need to download
 and unpack the 32.2.1 version of Linux for Tegra found at
@@ -38,10 +39,18 @@ files instead of copying the ones provides in this repo.
 
 Otherwise:
 
+For both spi1 and spi2:
 ```
 $ cd /usr/src/nano
-$ cp jetson-nano-support/spi/u-boot.bin Linux_for_Tegra/bootloader/t210ref/p3450-porg/
-$ cp jetson-nano-support/spi/tegra210-p3448-0000-p3449-0000-a02.dtb Linux_for_Tegra/kernel/dtb/
+$ cp jetson-nano-support/spi/u-boot-spi1-spi2.bin Linux_for_Tegra/bootloader/t210ref/p3450-porg/u-boot.bin
+$ cp jetson-nano-support/spi/tegra210-p3448-0000-p3449-0000-a02-spi1-spi2.dtb Linux_for_Tegra/kernel/dtb/tegra210-p3448-0000-p3449-0000-a02.dtb
+```
+
+Or to enable only spi1 leaving the spi2 pins avaialble for GPIO:
+```
+$ cd /usr/src/nano
+$ cp jetson-nano-support/spi/u-boot-spi1-only.bin Linux_for_Tegra/bootloader/t210ref/p3450-porg/u-boot.bin
+$ cp jetson-nano-support/spi/tegra210-p3448-0000-p3449-0000-a02-spi1-only.dtb Linux_for_Tegra/kernel/dtb/tegra210-p3448-0000-p3449-0000-a02.dtb
 ```
 
 ### Copy updated flash scripts
@@ -80,15 +89,16 @@ The device is now ready for flashing.
 
 ### Flash the partitions
 
-There are 3 partitions that have to be flashed.
+There are 4 partitions that have to be flashed.
 * EBT is the cboot bootloader.
 * LNX is technically the Linux kernel but on these boards, it's really the u-boot bootloader.
 * DTB is the device tree blob that the actual Linux kernel will use.
+* RP1 is another copy of the device tree blob.
 
-To flash all 3 at the same time...
+To flash all 4 at the same time...
 ```
 $ cd /usr/src/nano/Linux_for_Tegra
-$ ./flash-partitions.sh --partitions=EBT,LNX,DTB jetson-nano-qspi-sd mmcblk0p1
+$ ./flash-partitions.sh --partitions=EBT,RP1,LNX,DTB jetson-nano-qspi-sd mmcblk0p1
 ```
 This will flash a partition, reboot to recovery, then flash the next partition, etc.
 After the last partition, the board will coldboot.  If you have the serial console
@@ -97,7 +107,7 @@ see the u-boot menu and then the kernel load process.
 
 If you didn't unpack the root filesystem to Linux_for_Tegra/rootfs, you may see
 harmless messages like
-`sed: can't read /usr/src/nano/Linux_for_Tegra/rootfs/etc/nv_boot_control.conf: Not a directory
+`sed: can't read /usr/src/nano/Linux_for_Tegra/rootfs/etc/nv_boot_control.conf: Not a directory`
 They can be safely ignored.`
 
 ### Confirm
@@ -107,6 +117,9 @@ On the device...
 # ls -al /dev/spi*
 crw------- 1 root root 153, 0 Sep  4 16:03 spidev0.0
 crw------- 1 root root 153, 1 Sep  4 16:03 spidev0.1
+```
+and if spi2 was enabled...
+```
 crw------- 1 root root 153, 2 Sep  4 16:03 spidev1.0
 crw------- 1 root root 153, 3 Sep  4 16:03 spidev1.1
 ```
@@ -137,9 +150,10 @@ u-boot.  Simply use the u-boot.bin provided in this repo.
 
 ```
 $ cd /usr/src/nano/Linux_for_Tegra/sources/u-boot
-$ patch -p1 < /usr/src/nano/jetson-nano-support/spi/0001-U-Boot-Enable-SPI1-and-SPI2-for-Nano.patch
+$ patch -p1 < /usr/src/nano/jetson-nano-support/spi/uboot-spi1-spi2.patch
 patching file board/nvidia/p3450-porg/pinmux-config-p3450-porg.h
 ```
+Use the `spi1-only` patch file if you only want spi1.
 Adjust board/nvidia/p3450-porg/pinmux-config-p3450-porg.h as needed.  
 
 ##### Build and copy
@@ -166,11 +180,13 @@ $ cp u-boot.bin /usr/src/nano/Linux_for_Tegra/bootloader/t210ref/p3450-porg/
 
 ```
 $ cd /usr/src/nano/Linux_for_Tegra/sources/hardware/nvidia/platform/t210/porg
-$ patch -p1 < /usr/src/nano/jetson-nano-support/spi/0002-DTS-SPIdev-on-Expansion-Header-for-Nano.patch
+$ patch -p1 < /usr/src/nano/jetson-nano-support/spi/kernel-dtb-spi1-spi2.patch
 patching file kernel-dts/porg-platforms/tegra210-porg-gpio-p3448-0000-a02.dtsi
 patching file kernel-dts/porg-platforms/tegra210-porg-pinmux-p3448-0000-a02.dtsi
 patching file kernel-dts/tegra210-porg-p3448-common.dtsi
 ```
+Use the `spi1-only` patch file if you only want spi1.
+
 If you need to alter the slave devices assigned to the SPI controllers, those
 definitions are in `kernel-dts/tegra210-porg-p3448-common.dtsi` starting at around
 line 204.  If you need to modify the pin assignments or initialization parameters,
