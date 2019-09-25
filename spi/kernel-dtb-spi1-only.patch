@@ -15,10 +15,10 @@ index 6acdc55..d3803ef 100755
  				TEGRA_GPIO(H, 5)
  				TEGRA_GPIO(H, 6)
 diff --git a/kernel-dts/porg-platforms/tegra210-porg-pinmux-p3448-0000-a02.dtsi b/kernel-dts/porg-platforms/tegra210-porg-pinmux-p3448-0000-a02.dtsi
-index b226e1a..b4a0f26 100755
+index b226e1a..4acac34 100755
 --- a/kernel-dts/porg-platforms/tegra210-porg-pinmux-p3448-0000-a02.dtsi
 +++ b/kernel-dts/porg-platforms/tegra210-porg-pinmux-p3448-0000-a02.dtsi
-@@ -825,42 +825,57 @@
+@@ -825,26 +825,26 @@
  
  			spi1_mosi_pc0 {
  				nvidia,pins = "spi1_mosi_pc0";
@@ -28,21 +28,17 @@ index b226e1a..b4a0f26 100755
  				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 -				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 +				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
-+				nvidia,drive-type = <3>;
-+				nvidia,high-speed-mode = <TEGRA_PIN_ENABLE>;
-+				nvidia,pull-down-strength = <0>;
  			};
  
  			spi1_miso_pc1 {
  				nvidia,pins = "spi1_miso_pc1";
 -				nvidia,function = "rsvd1";
+-				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+-				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 +				nvidia,function = "spi1";
- 				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
- 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
++				nvidia,pull = <TEGRA_PIN_PULL_NONE>;
++				nvidia,tristate = <TEGRA_PIN_ENABLE>;
  				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
-+				nvidia,high-speed-mode = <TEGRA_PIN_ENABLE>;
-+				nvidia,pull-down-strength = <0>;
-+				nvidia,schmitt = <TEGRA_PIN_ENABLE>;
  			};
  
  			spi1_sck_pc2 {
@@ -53,35 +49,24 @@ index b226e1a..b4a0f26 100755
  				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 -				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 +				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
-+				nvidia,drive-type = <3>;
-+				nvidia,high-speed-mode = <TEGRA_PIN_ENABLE>;
-+				nvidia,pull-down-strength = <0>;
  			};
  
  			spi1_cs0_pc3 {
- 				nvidia,pins = "spi1_cs0_pc3";
--				nvidia,function = "rsvd1";
-+				nvidia,function = "spi1";
+@@ -852,7 +852,7 @@
+ 				nvidia,function = "rsvd1";
  				nvidia,pull = <TEGRA_PIN_PULL_UP>;
  				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 -				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 +				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
-+				nvidia,drive-type = <3>;
-+				nvidia,high-speed-mode = <TEGRA_PIN_ENABLE>;
-+				nvidia,pull-up-strength = <0>;
  			};
  
  			spi1_cs1_pc4 {
- 				nvidia,pins = "spi1_cs1_pc4";
--				nvidia,function = "rsvd1";
-+				nvidia,function = "spi1";
+@@ -860,7 +860,7 @@
+ 				nvidia,function = "rsvd1";
  				nvidia,pull = <TEGRA_PIN_PULL_UP>;
  				nvidia,tristate = <TEGRA_PIN_DISABLE>;
 -				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
 +				nvidia,enable-input = <TEGRA_PIN_DISABLE>;
-+				nvidia,drive-type = <3>;
-+				nvidia,high-speed-mode = <TEGRA_PIN_ENABLE>;
-+				nvidia,pull-up-strength = <0>;
  			};
  
  			wifi_en_ph0 {
@@ -99,38 +84,37 @@ index 7200614..3377179 100644
  			"",     "",     "",     "",     "",     "",     "",     "",     "GPIO13",      "",
  			"",     "",     "",     "",     "",     "",     "",     "",     "",     "",
 diff --git a/kernel-dts/tegra210-porg-p3448-common.dtsi b/kernel-dts/tegra210-porg-p3448-common.dtsi
-index 9ff3f7a..9ac4745 100644
+index 9ff3f7a..049d868 100644
 --- a/kernel-dts/tegra210-porg-p3448-common.dtsi
 +++ b/kernel-dts/tegra210-porg-p3448-common.dtsi
-@@ -203,10 +203,41 @@
+@@ -203,10 +203,40 @@
  
  	spi@7000d400 { /* SPI 1 to 40 pin header */
  		status = "okay";
 +		num-cs = <2>;
-+		spi0_0 {
++		cs-gpios = <&gpio TEGRA_GPIO(C, 3) GPIO_ACTIVE_LOW>, <&gpio TEGRA_GPIO(C, 4) GPIO_ACTIVE_LOW>;
++		spi@0 {
 +			#address-cells = <0x1>;
 +			#size-cells = <0x0>;
 +			compatible = "spidev";
 +			status = "okay";
 +			reg = <0>;
-+			spi-max-frequency = <54000000>;
++			spi-max-frequency = <65000000>;
 +			controller-data {
-+				nvidia,enable-hw-based-cs;
 +				nvidia,cs-setup-clk-count = <0x1e>;
 +				nvidia,cs-hold-clk-count = <0x1e>;
 +				nvidia,rx-clk-tap-delay = <0x1f>;
 +				nvidia,tx-clk-tap-delay = <0x0>;
 +			};
 +		};
-+		spi0_1 {
++		spi@1 {
 +			#address-cells = <0x1>;
 +			#size-cells = <0x0>;
 +			compatible = "spidev";
 +			status = "okay";
 +			reg = <1>;
-+			spi-max-frequency = <54000000>;
++			spi-max-frequency = <65000000>;
 +			controller-data {
-+				nvidia,enable-hw-based-cs;
 +				nvidia,cs-setup-clk-count = <0x1e>;
 +				nvidia,cs-hold-clk-count = <0x1e>;
 +				nvidia,rx-clk-tap-delay = <0x1f>;
@@ -145,17 +129,9 @@ index 9ff3f7a..9ac4745 100644
  	};
  
  	spi@7000d800 {
-@@ -794,9 +825,15 @@
- 			output-high;
- 			gpio-suspend;
+@@ -796,7 +826,7 @@
  			suspend-output-low;
-+			function;
  			gpios = <
-+				TEGRA_GPIO(C, 0) 0
-+				TEGRA_GPIO(C, 1) 0
-+				TEGRA_GPIO(C, 2) 0
-+				TEGRA_GPIO(C, 3) 0
-+				TEGRA_GPIO(C, 4) 0
  				TEGRA_GPIO(A, 6) 0
 -				>;
 +			>;

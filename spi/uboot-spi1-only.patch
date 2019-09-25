@@ -1,33 +1,66 @@
 diff --git a/board/nvidia/p3450-porg/pinmux-config-p3450-porg.h b/board/nvidia/p3450-porg/pinmux-config-p3450-porg.h
-index 49df131335..b76c5ab2c4 100644
+index 49df131335..0a09649ab2 100644
 --- a/board/nvidia/p3450-porg/pinmux-config-p3450-porg.h
 +++ b/board/nvidia/p3450-porg/pinmux-config-p3450-porg.h
-@@ -34,11 +34,6 @@ static const struct tegra_gpio_config p3450_porg_gpio_inits[] = {
- 	GPIO_INIT(B,    5,   IN),
- 	GPIO_INIT(B,    6,   IN),
- 	GPIO_INIT(B,    7,   IN),
+@@ -30,15 +30,10 @@ static const struct tegra_gpio_config p3450_porg_gpio_inits[] = {
+ 	/*        port, pin, init_val */
+ 	GPIO_INIT(A,    5,   IN),
+ 	GPIO_INIT(A,    6,   OUT1),
+-	GPIO_INIT(B,    4,   IN),
+-	GPIO_INIT(B,    5,   IN),
+-	GPIO_INIT(B,    6,   IN),
+-	GPIO_INIT(B,    7,   IN),
 -	GPIO_INIT(C,    0,   IN),
 -	GPIO_INIT(C,    1,   IN),
 -	GPIO_INIT(C,    2,   IN),
 -	GPIO_INIT(C,    3,   IN),
 -	GPIO_INIT(C,    4,   IN),
++	GPIO_INIT(B,    7,   OUT1),
++	GPIO_INIT(DD,   0,   OUT1),
++	GPIO_INIT(C,    3,   OUT1),
++	GPIO_INIT(C,    4,   OUT1),
  	GPIO_INIT(E,    6,   IN),
  	GPIO_INIT(G,    2,   IN),
  	GPIO_INIT(G,    3,   IN),
-@@ -101,11 +96,11 @@ static const struct pmux_pingrp_config p3450_porg_pingrps[] = {
- 	PINCFG(SPI2_MISO_PB5,        DEFAULT,    DOWN,   NORMAL,   INPUT,   DISABLE, DEFAULT),
- 	PINCFG(SPI2_SCK_PB6,         DEFAULT,    DOWN,   NORMAL,   INPUT,   DISABLE, DEFAULT),
- 	PINCFG(SPI2_CS0_PB7,         DEFAULT,    DOWN,   NORMAL,   INPUT,   DISABLE, DEFAULT),
+@@ -73,7 +68,6 @@ static const struct tegra_gpio_config p3450_porg_gpio_inits[] = {
+ 	GPIO_INIT(BB,   0,   IN),
+ 	GPIO_INIT(CC,   4,   IN),
+ 	GPIO_INIT(CC,   7,   OUT1),
+-	GPIO_INIT(DD,   0,   IN),
+ };
+ 
+ #define PINCFG(_pingrp, _mux, _pull, _tri, _io, _od, _e_io_hv)	\
+@@ -97,15 +91,15 @@ static const struct pmux_pingrp_config p3450_porg_pingrps[] = {
+ 	PINCFG(PEX_L1_CLKREQ_N_PA4,  PE1,        NORMAL, NORMAL,   INPUT,   DISABLE, HIGH),
+ 	PINCFG(SATA_LED_ACTIVE_PA5,  DEFAULT,    UP,     NORMAL,   INPUT,   DISABLE, DEFAULT),
+ 	PINCFG(PA6,                  DEFAULT,    NORMAL, NORMAL,   OUTPUT,  DISABLE, DEFAULT),
+-	PINCFG(SPI2_MOSI_PB4,        DEFAULT,    DOWN,   NORMAL,   INPUT,   DISABLE, DEFAULT),
+-	PINCFG(SPI2_MISO_PB5,        DEFAULT,    DOWN,   NORMAL,   INPUT,   DISABLE, DEFAULT),
+-	PINCFG(SPI2_SCK_PB6,         DEFAULT,    DOWN,   NORMAL,   INPUT,   DISABLE, DEFAULT),
+-	PINCFG(SPI2_CS0_PB7,         DEFAULT,    DOWN,   NORMAL,   INPUT,   DISABLE, DEFAULT),
 -	PINCFG(SPI1_MOSI_PC0,        DEFAULT,    DOWN,   NORMAL,   INPUT,   DISABLE, DEFAULT),
 -	PINCFG(SPI1_MISO_PC1,        DEFAULT,    DOWN,   NORMAL,   INPUT,   DISABLE, DEFAULT),
 -	PINCFG(SPI1_SCK_PC2,         DEFAULT,    DOWN,   NORMAL,   INPUT,   DISABLE, DEFAULT),
 -	PINCFG(SPI1_CS0_PC3,         DEFAULT,    UP,     NORMAL,   INPUT,   DISABLE, DEFAULT),
 -	PINCFG(SPI1_CS1_PC4,         DEFAULT,    UP,     NORMAL,   INPUT,   DISABLE, DEFAULT),
++	PINCFG(SPI2_MOSI_PB4,        SPI2,       DOWN,   NORMAL,   INPUT,   DISABLE, DEFAULT),
++	PINCFG(SPI2_MISO_PB5,        SPI2,       NORMAL, TRISTATE, INPUT,   DISABLE, DEFAULT),
++	PINCFG(SPI2_SCK_PB6,         SPI2,       DOWN,   NORMAL,   OUTPUT,  DISABLE, DEFAULT),
++	PINCFG(SPI2_CS0_PB7,         SPI2,       UP,     NORMAL,   OUTPUT,  DISABLE, DEFAULT),
 +	PINCFG(SPI1_MOSI_PC0,        SPI1,       DOWN,   NORMAL,   OUTPUT,  DISABLE, DEFAULT),
-+	PINCFG(SPI1_MISO_PC1,        SPI1,       DOWN,   NORMAL,   INPUT,   DISABLE, DEFAULT),
++	PINCFG(SPI1_MISO_PC1,        SPI1,       NORMAL, TRISTATE, INPUT,   DISABLE, DEFAULT),
 +	PINCFG(SPI1_SCK_PC2,         SPI1,       DOWN,   NORMAL,   OUTPUT,  DISABLE, DEFAULT),
 +	PINCFG(SPI1_CS0_PC3,         SPI1,       UP,     NORMAL,   OUTPUT,  DISABLE, DEFAULT),
 +	PINCFG(SPI1_CS1_PC4,         SPI1,       UP,     NORMAL,   OUTPUT,  DISABLE, DEFAULT),
  	PINCFG(SPI4_SCK_PC5,         RSVD1,      DOWN,   TRISTATE, OUTPUT,  DISABLE, DEFAULT),
  	PINCFG(SPI4_CS0_PC6,         RSVD1,      DOWN,   TRISTATE, OUTPUT,  DISABLE, DEFAULT),
  	PINCFG(SPI4_MOSI_PC7,        RSVD1,      DOWN,   TRISTATE, OUTPUT,  DISABLE, DEFAULT),
+@@ -229,7 +223,7 @@ static const struct pmux_pingrp_config p3450_porg_pingrps[] = {
+ 	PINCFG(USB_VBUS_EN1_PCC5,    RSVD1,      DOWN,   TRISTATE, OUTPUT,  DISABLE, NORMAL),
+ 	PINCFG(DP_HPD0_PCC6,         DP,         NORMAL, NORMAL,   INPUT,   DISABLE, DEFAULT),
+ 	PINCFG(PCC7,                 DEFAULT,    NORMAL, NORMAL,   OUTPUT,  DISABLE, HIGH),
+-	PINCFG(SPI2_CS1_PDD0,        DEFAULT,    DOWN,   NORMAL,   INPUT,   DISABLE, DEFAULT),
++	PINCFG(SPI2_CS1_PDD0,        SPI2,       UP,     NORMAL,   OUTPUT,   DISABLE, DEFAULT),
+ 	PINCFG(QSPI_SCK_PEE0,        QSPI,       NORMAL, NORMAL,   INPUT,   DISABLE, DEFAULT),
+ 	PINCFG(QSPI_CS_N_PEE1,       QSPI,       NORMAL, NORMAL,   OUTPUT,  DISABLE, DEFAULT),
+ 	PINCFG(QSPI_IO0_PEE2,        QSPI,       NORMAL, NORMAL,   INPUT,   DISABLE, DEFAULT),
