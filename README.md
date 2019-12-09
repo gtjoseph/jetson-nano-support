@@ -40,6 +40,9 @@ If you want to create your own flash package you can use the scripts in the
   directory, and your u-boot.bin file to Linux_for_Tegra/bootloader/t210ref/p3450-porg/
   directory.
 
+* Copy create-signed-partitions.sh and create-flash-package.sh to your
+  Linux_for_Tegra directory.
+
 * From your Linux_for_Tegra directory, run `sudo ./create-signed-partitions.sh -r 200`
   where "200" is the board rev id for the "a02" boards.  Adjust as necessary.
   This command will apply the DTBs to the appropriate partition blobs and sign
