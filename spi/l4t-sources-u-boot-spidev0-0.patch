@@ -1,0 +1,15 @@
+diff --git a/board/nvidia/p3450-porg/pinmux-config-p3450-porg.h b/board/nvidia/p3450-porg/pinmux-config-p3450-porg.h
+index 49df131335..0b56a315c1 100644
+--- a/board/nvidia/p3450-porg/pinmux-config-p3450-porg.h
++++ b/board/nvidia/p3450-porg/pinmux-config-p3450-porg.h
+@@ -34,10 +34,6 @@ static const struct tegra_gpio_config p3450_porg_gpio_inits[] = {
+ 	GPIO_INIT(B,    5,   IN),
+ 	GPIO_INIT(B,    6,   IN),
+ 	GPIO_INIT(B,    7,   IN),
+-	GPIO_INIT(C,    0,   IN),
+-	GPIO_INIT(C,    1,   IN),
+-	GPIO_INIT(C,    2,   IN),
+-	GPIO_INIT(C,    3,   IN),
+ 	GPIO_INIT(C,    4,   IN),
+ 	GPIO_INIT(E,    6,   IN),
+ 	GPIO_INIT(G,    2,   IN),

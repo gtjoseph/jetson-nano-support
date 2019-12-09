@@ -1,0 +1,90 @@
+diff --git a/kernel-dts/porg-platforms/tegra210-porg-gpio-p3448-0000-a02.dtsi b/kernel-dts/porg-platforms/tegra210-porg-gpio-p3448-0000-a02.dtsi
+index 6acdc55..75e199d 100755
+--- a/kernel-dts/porg-platforms/tegra210-porg-gpio-p3448-0000-a02.dtsi
++++ b/kernel-dts/porg-platforms/tegra210-porg-gpio-p3448-0000-a02.dtsi
+@@ -50,10 +50,6 @@
+ 				TEGRA_GPIO(J, 7)
+ 				TEGRA_GPIO(G, 2)
+ 				TEGRA_GPIO(G, 3)
+-				TEGRA_GPIO(C, 0)
+-				TEGRA_GPIO(C, 1)
+-				TEGRA_GPIO(C, 2)
+-				TEGRA_GPIO(C, 3)
+ 				TEGRA_GPIO(C, 4)
+ 				TEGRA_GPIO(H, 2)
+ 				TEGRA_GPIO(H, 5)
+diff --git a/kernel-dts/porg-platforms/tegra210-porg-pinmux-p3448-0000-a02.dtsi b/kernel-dts/porg-platforms/tegra210-porg-pinmux-p3448-0000-a02.dtsi
+index b226e1a..68f451c 100755
+--- a/kernel-dts/porg-platforms/tegra210-porg-pinmux-p3448-0000-a02.dtsi
++++ b/kernel-dts/porg-platforms/tegra210-porg-pinmux-p3448-0000-a02.dtsi
+@@ -825,7 +825,7 @@
+ 
+ 			spi1_mosi_pc0 {
+ 				nvidia,pins = "spi1_mosi_pc0";
+-				nvidia,function = "rsvd1";
++				nvidia,function = "spi1";
+ 				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+ 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+ 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+@@ -833,7 +833,7 @@
+ 
+ 			spi1_miso_pc1 {
+ 				nvidia,pins = "spi1_miso_pc1";
+-				nvidia,function = "rsvd1";
++				nvidia,function = "spi1";
+ 				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+ 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+ 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+@@ -841,7 +841,7 @@
+ 
+ 			spi1_sck_pc2 {
+ 				nvidia,pins = "spi1_sck_pc2";
+-				nvidia,function = "rsvd1";
++				nvidia,function = "spi1";
+ 				nvidia,pull = <TEGRA_PIN_PULL_DOWN>;
+ 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+ 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+@@ -849,7 +849,7 @@
+ 
+ 			spi1_cs0_pc3 {
+ 				nvidia,pins = "spi1_cs0_pc3";
+-				nvidia,function = "rsvd1";
++				nvidia,function = "spi1";
+ 				nvidia,pull = <TEGRA_PIN_PULL_UP>;
+ 				nvidia,tristate = <TEGRA_PIN_DISABLE>;
+ 				nvidia,enable-input = <TEGRA_PIN_ENABLE>;
+diff --git a/kernel-dts/tegra210-porg-p3448-common.dtsi b/kernel-dts/tegra210-porg-p3448-common.dtsi
+index 79e916f..63508b0 100644
+--- a/kernel-dts/tegra210-porg-p3448-common.dtsi
++++ b/kernel-dts/tegra210-porg-p3448-common.dtsi
+@@ -203,6 +203,22 @@
+ 
+ 	spi@7000d400 { /* SPI 1 to 40 pin header */
+ 		status = "okay";
++		num-cs = <1>;
++		spi0_0 {
++			#address-cells = <0x1>;
++			#size-cells = <0x0>;
++			compatible = "spidev";
++			status = "okay";
++			reg = <0>;
++			spi-max-frequency = <54000000>;
++			controller-data {
++				nvidia,enable-hw-based-cs;
++				nvidia,cs-setup-clk-count = <0x1e>;
++				nvidia,cs-hold-clk-count = <0x1e>;
++				nvidia,rx-clk-tap-delay = <0x1f>;
++				nvidia,tx-clk-tap-delay = <0x0>;
++			};
++		};
+ 	};
+ 
+ 	spi@7000d600 { /* SPI 2 to 40 pin header */
+@@ -800,6 +816,7 @@
+ 			suspend-output-low;
+ 			gpios = <
+ 				TEGRA_GPIO(A, 6) 0
++				TEGRA_GPIO(C, 3) 0
+ 				>;
+ 		};
+ 	};
